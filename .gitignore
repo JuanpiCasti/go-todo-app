@@ -1,4 +1,6 @@
+# IDE Files
+.idea
+.vscode
+
 # Generated mocks
 **/mock_*.go
-
-.idea
