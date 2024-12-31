@@ -1,0 +1,61 @@
+package service
+
+import (
+	"github.com/juanpicasti/go-todo-app/internal/app/dtos"
+	"github.com/juanpicasti/go-todo-app/internal/app/model"
+	"github.com/juanpicasti/go-todo-app/internal/app/repository"
+)
+
+type TodoService struct {
+	repository repository.TodoRepository
+}
+
+func NewTodoService(repository repository.TodoRepository) *TodoService {
+	return &TodoService{
+		repository: repository,
+	}
+}
+
+func (s *TodoService) GetAll() ([]dtos.TodoResponse, error) {
+	todos, err := s.repository.GetAll()
+	return mapToResponseDtoSlice(todos), err
+}
+
+func (s *TodoService) Create(todoRequest dtos.TodoCreateRequest) (dtos.TodoResponse, error) {
+	todo := mapToEntity(todoRequest)
+	newTodo, err := s.repository.Create(todo)
+	if err != nil {
+		return dtos.TodoResponse{}, err
+	}
+	return mapToResponseDto(newTodo), nil
+}
+
+func mapToResponseDtoSlice(todos []model.Todo) []dtos.TodoResponse {
+
+	if todos == nil {
+		return []dtos.TodoResponse{}
+	}
+
+	todoResponses := make([]dtos.TodoResponse, 0, len(todos))
+
+	for _, todo := range todos {
+		todoResponses = append(todoResponses, mapToResponseDto(todo))
+	}
+	return todoResponses
+}
+
+func mapToResponseDto(todo model.Todo) dtos.TodoResponse {
+	return dtos.TodoResponse{
+		ID:          todo.ID,
+		Title:       todo.Title,
+		Description: todo.Description,
+		Completed:   todo.Completed,
+	}
+}
+
+func mapToEntity(todoRequest dtos.TodoCreateRequest) model.Todo {
+	return model.Todo{
+		Title:       todoRequest.Title,
+		Description: todoRequest.Description,
+	}
+}
