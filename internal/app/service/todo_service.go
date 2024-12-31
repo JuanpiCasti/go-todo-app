@@ -30,6 +30,37 @@ func (s *TodoService) Create(todoRequest dtos.TodoCreateRequest) (dtos.TodoRespo
 	return mapToResponseDto(newTodo), nil
 }
 
+func (s *TodoService) Update(todoRequest dtos.TodoCreateRequest, id int) (dtos.TodoResponse, error) {
+	todo := mapToEntity(todoRequest)
+	updatedTodo, err := s.repository.Update(todo, id)
+
+	if err != nil {
+		return dtos.TodoResponse{}, err
+	}
+
+	return mapToResponseDto(updatedTodo), nil
+}
+
+func (s *TodoService) GetById(id int) (dtos.TodoResponse, error) {
+	todo, err := s.repository.GetById(id)
+
+	if err != nil {
+		return dtos.TodoResponse{}, err
+	}
+
+	return mapToResponseDto(todo), err
+}
+
+func (s *TodoService) Delete(id int) (dtos.TodoResponse, error) {
+	todo, err := s.repository.Delete(id)
+
+	if err != nil {
+		return dtos.TodoResponse{}, err
+	}
+
+	return mapToResponseDto(todo), err
+}
+
 func mapToResponseDtoSlice(todos []model.Todo) []dtos.TodoResponse {
 
 	if todos == nil {

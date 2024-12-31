@@ -21,7 +21,10 @@ func SetupRouter(db *sqlx.DB) *gin.Engine {
 	api := router.Group("/api/v1")
 	{
 		api.GET("/todos", todoHandler.GetAll)
+		api.GET("/todos/:id", todoHandler.GetById)
 		api.POST("/todos", todoHandler.Create)
+		api.PUT("/todos/:id", todoHandler.Update)
+		api.DELETE("/todos/:id", todoHandler.Delete)
 	}
 
 	return router

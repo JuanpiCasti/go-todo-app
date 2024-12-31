@@ -2,6 +2,7 @@ package handler
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/juanpicasti/go-todo-app/internal/app/dtos"
@@ -44,4 +45,73 @@ func (h *TodoHandler) Create(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusCreated, newTodo)
+}
+
+func (h *TodoHandler) Update(c *gin.Context) {
+	var requestBody dtos.TodoCreateRequest
+
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil || id <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Todo id must be provided as a positive integer."})
+		return
+	}
+
+	if err := c.ShouldBindBodyWithJSON(&requestBody); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	updatedTodo, err := h.service.Update(requestBody, id)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, updatedTodo)
+}
+
+func (h *TodoHandler) GetById(c *gin.Context) {
+
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil || id <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Todo ID must be provided as a positive integer."})
+		return
+	}
+
+	todoResponse, err := h.service.GetById(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo with the given ID not found."})
+		return
+	}
+
+	c.JSON(http.StatusOK, todoResponse)
+}
+
+func (h *TodoHandler) Delete(c *gin.Context) {
+	idParam := c.Param("id")
+
+	id, err := strconv.Atoi(idParam)
+
+	if err != nil || id <= 0 {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Todo ID must be provided as a positive integer."})
+		return
+	}
+
+	todoResponse, err := h.service.Delete(id)
+
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Todo with the given ID not found."})
+		return
+	}
+
+	c.JSON(http.StatusOK, todoResponse)
+
 }
