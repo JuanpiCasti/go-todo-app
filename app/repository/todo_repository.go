@@ -3,10 +3,11 @@ package repository
 //go:generate go run github.com/golang/mock/mockgen -destination=mock_todo_repository.go -package=repository github.com/juanpicasti/go-todo-app/internal/app/repository TodoRepository
 
 import (
+	"github.com/juanpicasti/go-todo-app/app/model"
+	"github.com/juanpicasti/go-todo-app/database"
 	"log"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/juanpicasti/go-todo-app/internal/app/model"
 )
 
 type TodoRepository interface {
@@ -21,8 +22,8 @@ type todoRepository struct {
 	db *sqlx.DB
 }
 
-func NewTodoRepository(db *sqlx.DB) *todoRepository {
-	return &todoRepository{db}
+func NewTodoRepository() *todoRepository {
+	return &todoRepository{database.DB}
 }
 
 func (r *todoRepository) GetAll() ([]model.Todo, error) {

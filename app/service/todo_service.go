@@ -1,9 +1,9 @@
 package service
 
 import (
-	"github.com/juanpicasti/go-todo-app/internal/app/dtos"
-	"github.com/juanpicasti/go-todo-app/internal/app/model"
-	"github.com/juanpicasti/go-todo-app/internal/app/repository"
+	"github.com/juanpicasti/go-todo-app/app/dtos"
+	"github.com/juanpicasti/go-todo-app/app/model"
+	"github.com/juanpicasti/go-todo-app/app/repository"
 )
 
 type TodoService struct {
@@ -88,5 +88,6 @@ func mapToEntity(todoRequest dtos.TodoCreateRequest) model.Todo {
 	return model.Todo{
 		Title:       todoRequest.Title,
 		Description: todoRequest.Description,
+		Completed:   todoRequest.Completed,
 	}
 }

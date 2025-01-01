@@ -1,12 +1,12 @@
 package handler
 
 import (
+	"github.com/juanpicasti/go-todo-app/app/dtos"
+	"github.com/juanpicasti/go-todo-app/app/service"
 	"net/http"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/juanpicasti/go-todo-app/internal/app/dtos"
-	"github.com/juanpicasti/go-todo-app/internal/app/service"
 )
 
 type TodoHandler struct {

@@ -4,3 +4,6 @@
 
 # Generated mocks
 **/mock_*.go
+
+# Binaries
+bin

@@ -10,4 +10,5 @@ type TodoResponse struct {
 type TodoCreateRequest struct {
 	Title       string `json:"title" binding:"required"`
 	Description string `json:"description"`
+	Completed   bool   `json:"completed"`
 }
