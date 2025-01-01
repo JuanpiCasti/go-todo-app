@@ -16,8 +16,10 @@ type Config struct {
 	ServerPort       string
 }
 
-func LoadConfig() *Config {
-	return &Config{
+var CFG *Config
+
+func LoadConfig() {
+	CFG = &Config{
 		DatabaseUser:     getEnv("DATABASE_USER"),
 		DatabasePassword: getEnv("DATABASE_PASSWORD"),
 		DatabaseHost:     getEnv("DATABASE_HOST"),

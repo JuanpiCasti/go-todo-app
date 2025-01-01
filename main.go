@@ -1,10 +1,11 @@
 package main
 
 import (
-	"github.com/juanpicasti/go-todo-app/config"
-	"github.com/juanpicasti/go-todo-app/database"
-	"github.com/juanpicasti/go-todo-app/router"
 	"log"
+
+	"github.com/juanpicasti/go-todo-app/app/config"
+	"github.com/juanpicasti/go-todo-app/app/database"
+	"github.com/juanpicasti/go-todo-app/app/router"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -12,10 +13,9 @@ import (
 func main() {
 
 	// Load environment variables
-	cfg := config.LoadConfig()
-
+	config.LoadConfig()
 	// Initialize database connection
-	err := database.Connect(cfg)
+	err := database.Connect()
 	if err != nil {
 		log.Fatal("Error connecting to database: ", err)
 	}
@@ -28,7 +28,7 @@ func main() {
 
 	// Initialize server
 	r := router.SetupRouter()
-	err = r.Run(cfg.ServerPort)
+	err = r.Run(config.CFG.ServerPort)
 	if err != nil {
 		log.Fatal("Error starting server: ", err)
 	}

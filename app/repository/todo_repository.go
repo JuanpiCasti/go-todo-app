@@ -3,9 +3,10 @@ package repository
 //go:generate go run github.com/golang/mock/mockgen -destination=mock_todo_repository.go -package=repository github.com/juanpicasti/go-todo-app/internal/app/repository TodoRepository
 
 import (
-	"github.com/juanpicasti/go-todo-app/app/model"
-	"github.com/juanpicasti/go-todo-app/database"
 	"log"
+
+	"github.com/juanpicasti/go-todo-app/app/database"
+	"github.com/juanpicasti/go-todo-app/app/model"
 
 	"github.com/jmoiron/sqlx"
 )

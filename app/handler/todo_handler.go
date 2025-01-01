@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"fmt"
 	"github.com/juanpicasti/go-todo-app/app/dtos"
 	"github.com/juanpicasti/go-todo-app/app/service"
 	"net/http"
@@ -67,7 +68,7 @@ func (h *TodoHandler) Update(c *gin.Context) {
 	updatedTodo, err := h.service.Update(requestBody, id)
 
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Todo with the given ID not found: %d", id)})
 		return
 	}
 
