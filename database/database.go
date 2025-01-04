@@ -5,7 +5,7 @@ import (
 	"log"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/juanpicasti/go-todo-app/app/config"
+	"github.com/juanpicasti/go-todo-app/config"
 	_ "github.com/lib/pq"
 )
 

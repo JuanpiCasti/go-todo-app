@@ -3,9 +3,9 @@ package main
 import (
 	"log"
 
-	"github.com/juanpicasti/go-todo-app/app/config"
-	"github.com/juanpicasti/go-todo-app/app/database"
-	"github.com/juanpicasti/go-todo-app/app/router"
+	"github.com/juanpicasti/go-todo-app/config"
+	"github.com/juanpicasti/go-todo-app/database"
+	"github.com/juanpicasti/go-todo-app/router"
 
 	"github.com/jmoiron/sqlx"
 )

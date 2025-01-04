@@ -1,0 +1,205 @@
+openapi: 3.0.3
+info:
+  title: Todo API
+  description: A RESTful API for managing todos
+  version: 1.0.0
+
+tags:
+  - name: todos
+    description: Everything about todos
+
+components:
+  schemas:
+    Todo:
+      type: object
+      required:
+        - title
+      properties:
+        id:
+          type: string
+          format: uuid
+          example: "123e4567-e89b-12d3-a456-426614174000"
+          readOnly: true
+        title:
+          type: string
+          example: "Buy groceries"
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          example: "Get milk and eggs"
+          maxLength: 500
+        completed:
+          type: boolean
+          default: false
+        created_at:
+          type: string
+          format: date-time
+          readOnly: true
+        updated_at:
+          type: string
+          format: date-time
+          readOnly: true
+
+    TodoCreate:
+      type: object
+      required:
+        - title
+      properties:
+        title:
+          type: string
+          example: "Buy groceries"
+          minLength: 1
+          maxLength: 100
+        description:
+          type: string
+          example: "Get milk and eggs"
+          maxLength: 500
+
+    Error:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+          example: 400
+        message:
+          type: string
+          example: "Invalid input"
+
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/Error'
+
+paths:
+  /api/v1/todos:
+    get:
+      tags:
+        - todos
+      summary: List all todos
+      description: Returns a list of todos
+      operationId: listTodos
+      parameters:
+        - name: completed
+          in: query
+          description: Filter by completion status
+          required: false
+          schema:
+            type: boolean
+        - name: limit
+          in: query
+          description: Maximum number of items to return
+          required: false
+          schema:
+            type: integer
+            format: int32
+            minimum: 1
+            maximum: 100
+            default: 20
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      tags:
+        - todos
+      summary: Create a new todo
+      description: Creates a new todo item
+      operationId: createTodo
+      requestBody:
+        description: Todo object to be created
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoCreate'
+      responses:
+        '201':
+          description: Todo created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+  /api/v1/todos/{id}:
+    parameters:
+      - name: id
+        in: path
+        description: Todo ID
+        required: true
+        schema:
+          type: string
+          format: uuid
+
+    get:
+      tags:
+        - todos
+      summary: Get a todo by ID
+      description: Returns a single todo
+      operationId: getTodo
+      responses:
+        '200':
+          description: Successful operation
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+    put:
+      tags:
+        - todos
+      summary: Update a todo
+      description: Updates an existing todo
+      operationId: updateTodo
+      requestBody:
+        description: Todo object to be updated
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/TodoCreate'
+      responses:
+        '200':
+          description: Todo updated successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Todo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    delete:
+      tags:
+        - todos
+      summary: Delete a todo
+      description: Deletes a todo
+      operationId: deleteTodo
+      responses:
+        '204':
+          description: Todo deleted successfully
+        '404':
+          $ref: '#/components/responses/NotFound'

@@ -2,10 +2,11 @@ package handler
 
 import (
 	"fmt"
-	"github.com/juanpicasti/go-todo-app/app/dtos"
-	"github.com/juanpicasti/go-todo-app/app/service"
 	"net/http"
 	"strconv"
+
+	"github.com/juanpicasti/go-todo-app/app/dtos"
+	"github.com/juanpicasti/go-todo-app/app/service"
 
 	"github.com/gin-gonic/gin"
 )

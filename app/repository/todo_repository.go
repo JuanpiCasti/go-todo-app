@@ -5,8 +5,8 @@ package repository
 import (
 	"log"
 
-	"github.com/juanpicasti/go-todo-app/app/database"
 	"github.com/juanpicasti/go-todo-app/app/model"
+	"github.com/juanpicasti/go-todo-app/database"
 
 	"github.com/jmoiron/sqlx"
 )
