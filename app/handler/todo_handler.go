@@ -1,10 +1,14 @@
 package handler
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 	"strconv"
 
+	"github.com/rs/zerolog/log"
+
+	"github.com/juanpicasti/go-todo-app/app/customerror"
 	"github.com/juanpicasti/go-todo-app/app/dtos"
 	"github.com/juanpicasti/go-todo-app/app/service"
 
@@ -31,7 +35,6 @@ func (h *TodoHandler) GetAll(c *gin.Context) {
 }
 
 func (h *TodoHandler) Create(c *gin.Context) {
-
 	var requestBody dtos.TodoCreateRequest
 
 	if err := c.ShouldBindBodyWithJSON(&requestBody); err != nil {
@@ -39,8 +42,13 @@ func (h *TodoHandler) Create(c *gin.Context) {
 		return
 	}
 
-	newTodo, err := h.service.Create(requestBody)
+	userId, ok := c.Get("UserID")
+	if !ok {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not get user ID from context."})
+		return
+	}
 
+	newTodo, err := h.service.Create(requestBody, userId.(int))
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -67,7 +75,6 @@ func (h *TodoHandler) Update(c *gin.Context) {
 	}
 
 	updatedTodo, err := h.service.Update(requestBody, id)
-
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": fmt.Sprintf("Todo with the given ID not found: %d", id)})
 		return
@@ -77,7 +84,6 @@ func (h *TodoHandler) Update(c *gin.Context) {
 }
 
 func (h *TodoHandler) GetById(c *gin.Context) {
-
 	idParam := c.Param("id")
 
 	id, err := strconv.Atoi(idParam)
@@ -89,8 +95,14 @@ func (h *TodoHandler) GetById(c *gin.Context) {
 
 	todoResponse, err := h.service.GetById(id)
 
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Todo with the given ID not found."})
+	var notFounderror *customerror.TodoNotFoundError
+
+	if errors.As(err, &notFounderror) {
+		c.JSON(http.StatusNotFound, gin.H{"error": notFounderror.Error()})
+		return
+	} else if err != nil {
+		log.Error().Err(err).Msg(err.Error())
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Something unexpected happened when trying to get the todo."})
 		return
 	}
 
@@ -108,12 +120,10 @@ func (h *TodoHandler) Delete(c *gin.Context) {
 	}
 
 	todoResponse, err := h.service.Delete(id)
-
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Todo with the given ID not found."})
 		return
 	}
 
 	c.JSON(http.StatusOK, todoResponse)
-
 }

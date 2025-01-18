@@ -3,10 +3,12 @@ package repository
 //go:generate go run github.com/golang/mock/mockgen -destination=mock_todo_repository.go -package=repository github.com/juanpicasti/go-todo-app/internal/app/repository TodoRepository
 
 import (
-	"log"
+	"database/sql"
 
+	"github.com/rs/zerolog/log"
+
+	"github.com/juanpicasti/go-todo-app/app/customerror"
 	"github.com/juanpicasti/go-todo-app/app/model"
-	"github.com/juanpicasti/go-todo-app/database"
 
 	"github.com/jmoiron/sqlx"
 )
@@ -23,8 +25,8 @@ type todoRepository struct {
 	db *sqlx.DB
 }
 
-func NewTodoRepository() *todoRepository {
-	return &todoRepository{database.DB}
+func NewTodoRepository(db *sqlx.DB) *todoRepository {
+	return &todoRepository{db}
 }
 
 func (r *todoRepository) GetAll() ([]model.Todo, error) {
@@ -39,21 +41,21 @@ func (r *todoRepository) GetAll() ([]model.Todo, error) {
 func (r *todoRepository) Create(todo model.Todo) (model.Todo, error) {
 	var newTodo model.Todo
 	query := `
-        INSERT INTO todos (title, description) 
-        VALUES ($1, $2) 
+        INSERT INTO todos (title, description, user_id) 
+        VALUES ($1, $2, $3) 
         RETURNING id, title, description, completed
     `
 	err := r.db.
 		QueryRow(
 			query,
 			todo.Title,
-			todo.Description).
+			todo.Description,
+			todo.UserID).
 		Scan(
 			&newTodo.ID,
 			&newTodo.Title,
 			&newTodo.Description,
 			&newTodo.Completed)
-
 	if err != nil {
 		return model.Todo{}, err
 	}
@@ -81,7 +83,6 @@ func (r *todoRepository) Update(todo model.Todo, id int) (model.Todo, error) {
 			&updatedTodo.Title,
 			&updatedTodo.Description,
 			&updatedTodo.Completed)
-
 	if err != nil {
 		return model.Todo{}, err
 	}
@@ -92,6 +93,9 @@ func (r *todoRepository) Update(todo model.Todo, id int) (model.Todo, error) {
 func (r *todoRepository) GetById(id int) (model.Todo, error) {
 	var todo model.Todo
 	err := r.db.Get(&todo, "SELECT * FROM todos WHERE id = $1", id)
+	if err == sql.ErrNoRows {
+		return model.Todo{}, customerror.NewTodoNotFoundError(id)
+	}
 	if err != nil {
 		return model.Todo{}, err
 	}
@@ -100,16 +104,14 @@ func (r *todoRepository) GetById(id int) (model.Todo, error) {
 
 func (r *todoRepository) Delete(id int) (model.Todo, error) {
 	todo, err := r.GetById(id)
-
 	if err != nil {
 		return model.Todo{}, err
 		// Return custom error
 	}
 
 	_, err = r.db.Exec("DELETE FROM todos WHERE id=$1", id)
-
 	if err != nil {
-		log.Println(err.Error())
+		log.Error().Err(err).Msg(err.Error())
 		return model.Todo{}, err
 	}
 

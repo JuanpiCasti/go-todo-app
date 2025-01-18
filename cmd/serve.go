@@ -1,7 +1,7 @@
 package main
 
 import (
-	"log"
+	"github.com/rs/zerolog/log"
 
 	"github.com/juanpicasti/go-todo-app/config"
 	"github.com/juanpicasti/go-todo-app/database"
@@ -11,26 +11,29 @@ import (
 )
 
 func main() {
-
 	// Load environment variables
 	config.LoadConfig()
 	// Initialize database connection
-	err := database.Connect()
+	db, err := database.Connect()
 	if err != nil {
-		log.Fatal("Error connecting to database: ", err)
+		log.Error().Err(err).Msg("Error connecting to database: ")
+		panic(err)
 	}
+
 	defer func(db *sqlx.DB) {
 		err := db.Close()
 		if err != nil {
-			log.Fatal("Error closing database connection: ", err)
+			log.Error().Err(err).Msg("Error closing database connection: ")
+			panic(err)
 		}
-	}(database.DB)
+	}(db)
 
 	// Initialize server
-	r := router.SetupRouter()
+	r := router.SetupRouter(db)
+	log.Info().Msg("Starting server on port " + config.CFG.ServerPort)
 	err = r.Run(config.CFG.ServerPort)
 	if err != nil {
-		log.Fatal("Error starting server: ", err)
+		log.Error().Err(err).Msg("Error starting server: ")
+		panic(err)
 	}
-
 }

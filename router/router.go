@@ -2,29 +2,55 @@ package router
 
 import (
 	"github.com/gin-gonic/gin"
+	"github.com/jmoiron/sqlx"
 	"github.com/juanpicasti/go-todo-app/app/handler"
-	"github.com/juanpicasti/go-todo-app/app/repository"
-	"github.com/juanpicasti/go-todo-app/app/service"
+	"github.com/juanpicasti/go-todo-app/app/middleware"
 )
 
-func SetupRouter() *gin.Engine {
-	router := gin.Default()
+type Router struct {
+	engine      *gin.Engine
+	db          *sqlx.DB
+	todoHandler *handler.TodoHandler
+	authHandler *handler.AuthHandler
+}
 
-	// Initialize repo
-	todoRepository := repository.NewTodoRepository()
-	// Initialize service
-	todoService := service.NewTodoService(todoRepository)
-	// Initialize handler
-	todoHandler := handler.NewTodoHandler(todoService)
-
-	api := router.Group("/api/v1")
-	{
-		api.GET("/todos", todoHandler.GetAll)
-		api.GET("/todos/:id", todoHandler.GetById)
-		api.POST("/todos", todoHandler.Create)
-		api.PUT("/todos/:id", todoHandler.Update)
-		api.DELETE("/todos/:id", todoHandler.Delete)
+func NewRouter(db *sqlx.DB) *Router {
+	return &Router{
+		engine: gin.New(),
+		db:     db,
 	}
+}
 
-	return router
+func (r *Router) setupMiddleware() {
+	r.engine.Use(middleware.LoggerMiddleware())
+	r.engine.Use(gin.Recovery())
+	r.engine.Use(middleware.GetCorsMiddleware())
+}
+
+func SetupRouter(db *sqlx.DB) *gin.Engine {
+	router := NewRouter(db)
+	router.initializeHandlers()
+	router.setupMiddleware()
+	router.setupRoutes()
+	return router.engine
+}
+
+func (r *Router) setupRoutes() {
+	r.setupAuthRoutes()
+
+	// API routes
+	api := r.engine.Group("/api/v1")
+	api.Use(middleware.AuthMiddleware())
+	api.Use(middleware.RoleMiddleware(map[string]bool{
+		"admin": true,
+	}))
+
+	{
+		r.setupTodoRoutes(api)
+	}
+}
+
+func (r *Router) initializeHandlers() {
+	r.initAuthHandler()
+	r.initTodoHandler()
 }

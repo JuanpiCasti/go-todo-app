@@ -7,5 +7,6 @@
 
 # Binaries
 bin/
+tmp/
 
 .env

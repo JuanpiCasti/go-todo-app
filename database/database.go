@@ -2,16 +2,13 @@ package database
 
 import (
 	"fmt"
-	"log"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/juanpicasti/go-todo-app/config"
 	_ "github.com/lib/pq"
 )
 
-var DB *sqlx.DB
-
-func Connect() error {
+func Connect() (*sqlx.DB, error) {
 	constr := fmt.Sprintf(
 		"user=%s password=%s host=%s port=%s dbname=%s sslmode=%s sslrootcert=%s",
 		config.CFG.DatabaseUser,
@@ -25,15 +22,13 @@ func Connect() error {
 
 	dbConnection, err := sqlx.Connect("postgres", constr)
 	if err != nil {
-		log.Fatal("Error connecting to database: ", err)
+		return nil, err
 	}
 
 	err = dbConnection.Ping()
-
 	if err != nil {
-		log.Fatal("Error pinging database: ", err)
+		return nil, err
 	}
 
-	DB = dbConnection
-	return err
+	return dbConnection, err
 }
