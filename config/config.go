@@ -2,6 +2,7 @@ package config
 
 import (
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -10,16 +11,17 @@ import (
 )
 
 type Config struct {
-	DatabaseUser     string
-	DatabasePassword string
-	DatabaseHost     string
-	DatabasePort     string
-	DatabaseSslMode  string
-	DatabaseName     string
-	Sslrootcert      string
-	ServerPort       string
-	JWTSecret        string
-	AllowedOrigins   string
+	DatabaseUser         string
+	DatabasePassword     string
+	DatabaseHost         string
+	DatabasePort         string
+	DatabaseSslMode      string
+	DatabaseName         string
+	Sslrootcert          string
+	ServerPort           string
+	JWTSecret            string
+	AllowedOrigins       string
+	TokenDurationMinutes int
 }
 
 var CFG *Config
@@ -48,6 +50,12 @@ func loadEnv() {
 		JWTSecret:        getEnv("JWT_SECRET"),
 		AllowedOrigins:   getEnv("ALLOWED_ORIGINS"),
 	}
+
+	tokenDurationMinutes, err := strconv.Atoi(getEnv("TOKEN_DURATION_MINUTES"))
+	if err != nil {
+		log.Error().Err(err)
+	}
+	CFG.TokenDurationMinutes = tokenDurationMinutes
 }
 
 func confLogger() {

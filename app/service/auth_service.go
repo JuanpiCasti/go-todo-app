@@ -50,7 +50,7 @@ func (s *authService) GenerateToken(user model.UserWithRole) (string, error) {
 		RoleID:   user.Role.ID,
 		RoleName: user.Role.Name,
 		RegisteredClaims: jwt.RegisteredClaims{
-			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Hour * 24)),
+			ExpiresAt: jwt.NewNumericDate(time.Now().Add(time.Minute * time.Duration(config.CFG.TokenDurationMinutes))),
 			IssuedAt:  jwt.NewNumericDate(time.Now()),
 			NotBefore: jwt.NewNumericDate(time.Now()),
 		},
