@@ -31,3 +31,19 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 	c.JSON(http.StatusOK, token)
 }
+
+func (h *AuthHandler) Register(context *gin.Context) {
+	var registerRequest dtos.RegisterRequest
+	if err := context.ShouldBindJSON(&registerRequest); err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	registerResponse, err := h.authService.Register(registerRequest, 1)
+	if err != nil {
+		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	context.JSON(http.StatusOK, registerResponse)
+}

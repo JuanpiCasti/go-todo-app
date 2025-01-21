@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"golang.org/x/crypto/bcrypt"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
@@ -13,6 +14,7 @@ import (
 
 type AuthService interface {
 	Login(req dtos.LoginRequest) (*dtos.LoginResponse, error)
+	Register(req dtos.RegisterRequest, roleid int) (*dtos.RegisterResponse, error)
 	GenerateToken(user model.UserWithRole) (string, error)
 }
 
@@ -32,7 +34,7 @@ func (s *authService) Login(req dtos.LoginRequest) (*dtos.LoginResponse, error) 
 		return nil, errors.New("user not found")
 	}
 
-	if user.Password != req.Password {
+	if !checkPasswordHash(req.Password, user.Password) {
 		return nil, errors.New("invalid password")
 	}
 
@@ -42,6 +44,37 @@ func (s *authService) Login(req dtos.LoginRequest) (*dtos.LoginResponse, error) 
 	}
 
 	return &dtos.LoginResponse{Token: token}, nil
+}
+
+func (s *authService) Register(req dtos.RegisterRequest, roleId int) (*dtos.RegisterResponse, error) {
+	hashedPassword, err := hashPassword(req.Password)
+
+	if err != nil {
+		return nil, err
+	}
+
+	user := model.User{
+		Username: req.Username,
+		Password: string(hashedPassword),
+		RoleID:   roleId,
+	}
+
+	err = s.userRepository.CreateUser(&user)
+	if err != nil {
+		return nil, err
+	}
+
+	return &dtos.RegisterResponse{Username: user.Username}, nil
+}
+
+func checkPasswordHash(password, hash string) bool {
+	err := bcrypt.CompareHashAndPassword([]byte(hash), []byte(password))
+	return err == nil
+}
+
+func hashPassword(password string) ([]byte, error) {
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
+	return bytes, err
 }
 
 func (s *authService) GenerateToken(user model.UserWithRole) (string, error) {

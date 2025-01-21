@@ -4,6 +4,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 
 	"github.com/rs/zerolog/log"
 
@@ -31,7 +32,7 @@ func NewTodoRepository(db *sqlx.DB) *todoRepository {
 
 func (r *todoRepository) GetAll() ([]model.Todo, error) {
 	var todos []model.Todo
-	err := r.db.Select(&todos, "SELECT * FROM todos")
+	err := r.db.Select(&todos, "SELECT * FROM todo_app.todos")
 	if err != nil {
 		return nil, err
 	}
@@ -41,7 +42,7 @@ func (r *todoRepository) GetAll() ([]model.Todo, error) {
 func (r *todoRepository) Create(todo model.Todo) (model.Todo, error) {
 	var newTodo model.Todo
 	query := `
-        INSERT INTO todos (title, description, user_id) 
+        INSERT INTO todo_app.todos (title, description, user_id) 
         VALUES ($1, $2, $3) 
         RETURNING id, title, description, completed
     `
@@ -65,7 +66,7 @@ func (r *todoRepository) Create(todo model.Todo) (model.Todo, error) {
 func (r *todoRepository) Update(todo model.Todo, id int) (model.Todo, error) {
 	var updatedTodo model.Todo
 	query := `
-		UPDATE todos
+		UPDATE todo_app.todos
 		SET title = $1, description = $2, completed = $3
 		WHERE id = $4
 		RETURNING id, title, description, completed
@@ -92,8 +93,8 @@ func (r *todoRepository) Update(todo model.Todo, id int) (model.Todo, error) {
 
 func (r *todoRepository) GetById(id int) (model.Todo, error) {
 	var todo model.Todo
-	err := r.db.Get(&todo, "SELECT * FROM todos WHERE id = $1", id)
-	if err == sql.ErrNoRows {
+	err := r.db.Get(&todo, "SELECT * FROM todo_app.todos WHERE id = $1", id)
+	if errors.Is(sql.ErrNoRows, err) {
 		return model.Todo{}, customerror.NewTodoNotFoundError(id)
 	}
 	if err != nil {
@@ -109,7 +110,7 @@ func (r *todoRepository) Delete(id int) (model.Todo, error) {
 		// Return custom error
 	}
 
-	_, err = r.db.Exec("DELETE FROM todos WHERE id=$1", id)
+	_, err = r.db.Exec("DELETE FROM todo_app.todos WHERE id=$1", id)
 	if err != nil {
 		log.Error().Err(err).Msg(err.Error())
 		return model.Todo{}, err

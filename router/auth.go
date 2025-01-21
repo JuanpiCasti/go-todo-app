@@ -14,4 +14,5 @@ func (r *Router) initAuthHandler() {
 
 func (r *Router) setupAuthRoutes() {
 	r.engine.POST("/login", r.authHandler.Login)
+	r.engine.POST("/register", r.authHandler.Register)
 }

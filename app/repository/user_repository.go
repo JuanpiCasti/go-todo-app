@@ -10,6 +10,7 @@ import (
 
 type UserRepository interface {
 	FindByUsername(string) (*model.UserWithRole, error)
+	CreateUser(user *model.User) error
 }
 
 type userRepository struct {
@@ -26,8 +27,8 @@ func (r *userRepository) FindByUsername(username string) (*model.UserWithRole, e
       u.*,
       r.id AS "role.id",
       r.name AS "role.name"
-    FROM app_users u
-    JOIN app_roles r ON u.role_id = r.id
+    FROM todo_app.app_users u
+    JOIN todo_app.app_roles r ON u.role_id = r.id
     WHERE u.username = $1
   `
 	userWithRole := model.UserWithRole{}
@@ -37,4 +38,13 @@ func (r *userRepository) FindByUsername(username string) (*model.UserWithRole, e
 	}
 
 	return &userWithRole, nil
+}
+
+func (r *userRepository) CreateUser(user *model.User) error {
+	query := `
+	INSERT INTO todo_app.app_users (username, password, role_id, active)
+	VALUES ($1, $2, $3, true)
+  `
+	_, err := r.db.Exec(query, user.Username, user.Password, user.RoleID)
+	return err
 }
