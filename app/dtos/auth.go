@@ -8,8 +8,13 @@ type LoginRequest struct {
 }
 
 type RegisterRequest struct {
-	Username string `json:"username" binding:"required"`
-	Password string `json:"password" binding:"required"`
+	Username       string `json:"username" binding:"required,min=5"`
+	Password       string `json:"password" binding:"required,min=8"`
+	PasswordRepeat string `json:"password_repeat" binding:"required,eqfield=Password"`
+	PhoneNumber    string `json:"phone_number" binding:"required"`
+	Email          string `json:"email" binding:"required,email"`
+	Name           string `json:"name" binding:"required"`
+	LastName       string `json:"last_name" binding:"required"`
 }
 
 type RegisterResponse struct {

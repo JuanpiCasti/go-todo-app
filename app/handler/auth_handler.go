@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"github.com/juanpicasti/go-todo-app/app/util"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -9,11 +10,12 @@ import (
 )
 
 type AuthHandler struct {
-	authService service.AuthService
+	authService       service.AuthService
+	passwordValidator util.Validator
 }
 
-func NewAuthHandler(authService service.AuthService) *AuthHandler {
-	return &AuthHandler{authService}
+func NewAuthHandler(authService service.AuthService, validator util.Validator) *AuthHandler {
+	return &AuthHandler{authService, validator}
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -32,18 +34,23 @@ func (h *AuthHandler) Login(c *gin.Context) {
 	c.JSON(http.StatusOK, token)
 }
 
-func (h *AuthHandler) Register(context *gin.Context) {
+func (h *AuthHandler) Register(c *gin.Context) {
 	var registerRequest dtos.RegisterRequest
-	if err := context.ShouldBindJSON(&registerRequest); err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if err := c.ShouldBindJSON(&registerRequest); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if err := h.passwordValidator.Validate(registerRequest.Password); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
 	registerResponse, err := h.authService.Register(registerRequest, 1)
 	if err != nil {
-		context.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
 
-	context.JSON(http.StatusOK, registerResponse)
+	c.JSON(http.StatusOK, registerResponse)
 }

@@ -43,6 +43,7 @@ func (r *Router) setupRoutes() {
 	api.Use(middleware.AuthMiddleware())
 	api.Use(middleware.RoleMiddleware(map[string]bool{
 		"admin": true,
+		"user":  true,
 	}))
 
 	{
