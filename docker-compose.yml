@@ -16,7 +16,7 @@ services:
       SSLROOTCERT: /
       SERVER_PORT: 8080
       GO_MODE: debug
-      ALLOWED_ORIGINS: http://localhost:8080,http://127.0.0.1:8080
+      ALLOWED_ORIGINS: *
       JWT_SECRET: 9e7e07a6d1c7a1e8b45a3ab5600c5dde307478d847b708d02698b7c0c2373367
       TOKEN_DURATION_MINUTES: 5
     depends_on:
