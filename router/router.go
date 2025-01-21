@@ -5,6 +5,8 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/juanpicasti/go-todo-app/app/handler"
 	"github.com/juanpicasti/go-todo-app/app/middleware"
+	"github.com/juanpicasti/go-todo-app/config"
+	"github.com/rs/zerolog/log"
 )
 
 type Router struct {
@@ -29,6 +31,7 @@ func (r *Router) setupMiddleware() {
 
 func SetupRouter(db *sqlx.DB) *gin.Engine {
 	router := NewRouter(db)
+	router.setTrustedProxies()
 	router.initializeHandlers()
 	router.setupMiddleware()
 	router.setupRoutes()
@@ -54,4 +57,12 @@ func (r *Router) setupRoutes() {
 func (r *Router) initializeHandlers() {
 	r.initAuthHandler()
 	r.initTodoHandler()
+}
+
+func (r *Router) setTrustedProxies() {
+	err := r.engine.SetTrustedProxies(config.CFG.TrustedProxies)
+	if err != nil {
+		log.Error().Err(err).Msg("Could not set trusted proxies")
+		panic(err)
+	}
 }

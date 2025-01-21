@@ -3,6 +3,7 @@ package config
 import (
 	"os"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/joho/godotenv"
@@ -22,6 +23,7 @@ type Config struct {
 	JWTSecret            string
 	AllowedOrigins       string
 	TokenDurationMinutes int
+	TrustedProxies       []string
 }
 
 var CFG *Config
@@ -56,6 +58,12 @@ func loadEnv() {
 		log.Error().Err(err)
 	}
 	CFG.TokenDurationMinutes = tokenDurationMinutes
+
+	CFG.TrustedProxies = []string{}
+	trustedProxies := getEnv("TRUSTED_PROXY_IPS")
+	for _, proxy := range strings.Split(trustedProxies, ",") {
+		CFG.TrustedProxies = append(CFG.TrustedProxies, string(proxy))
+	}
 }
 
 func confLogger() {
