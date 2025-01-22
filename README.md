@@ -1,6 +1,6 @@
 # go-todo-app
 
-This is a project template for a simple todo app using Go with the Gin framework with a PostgreSQL database for the persistence.
+This is a project template for a simple todo app using Go with the Gin framework and a PostgreSQL database for the persistence.
 
 The project is structured following a layered architecture, aiming to provide a clean separation of concerns and allowing easy testing and maintenance.
 
