@@ -26,7 +26,7 @@ type todoRepository struct {
 	db *sqlx.DB
 }
 
-func NewTodoRepository(db *sqlx.DB) *todoRepository {
+func NewTodoRepository(db *sqlx.DB) TodoRepository {
 	return &todoRepository{db}
 }
 

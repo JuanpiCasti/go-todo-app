@@ -14,7 +14,7 @@ import (
 
 type AuthService interface {
 	Login(req dtos.LoginRequest) (*dtos.LoginResponse, error)
-	Register(req dtos.RegisterRequest, roleid int) (*dtos.RegisterResponse, error)
+	Register(req dtos.RegisterRequest, roleId int) (*dtos.RegisterResponse, error)
 	GenerateToken(user model.UserWithRole) (string, error)
 }
 
@@ -22,7 +22,7 @@ type authService struct {
 	userRepository repository.UserRepository
 }
 
-func NewAuthService(repository repository.UserRepository) *authService {
+func NewAuthService(repository repository.UserRepository) AuthService {
 	return &authService{
 		userRepository: repository,
 	}

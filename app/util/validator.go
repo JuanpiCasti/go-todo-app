@@ -2,10 +2,15 @@ package util
 
 type Validator interface {
 	Validate(text string) *ValidationError
+	AddValidations(validations ...Validation)
+}
+
+type Validation interface {
+	Validate(text string) *ValidationError
 }
 
 type validator struct {
-	validations []Validator
+	validations []Validation
 }
 
 type ValidationError struct {
@@ -16,11 +21,11 @@ func (e *ValidationError) Error() string {
 	return e.Message
 }
 
-func NewValidator() *validator {
+func NewValidator() Validator {
 	return &validator{}
 }
 
-func NewPasswordValidator() *validator {
+func NewPasswordValidator() Validator {
 	v := NewValidator()
 	v.AddValidations(&MinLengthValidator{min: 8}, &HasNumberValidator{})
 	return v
@@ -35,7 +40,7 @@ func (v *validator) Validate(text string) *ValidationError {
 	return nil
 }
 
-func (v *validator) AddValidations(validations ...Validator) {
+func (v *validator) AddValidations(validations ...Validation) {
 	for _, validation := range validations {
 		v.validations = append(v.validations, validation)
 	}
