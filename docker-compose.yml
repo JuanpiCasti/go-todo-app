@@ -19,7 +19,7 @@ services:
       ALLOWED_ORIGINS: '*'
       JWT_SECRET: 9e7e07a6d1c7a1e8b45a3ab5600c5dde307478d847b708d02698b7c0c2373367
       TOKEN_DURATION_MINUTES: 5
-      TRUSTED_PROXY_IPS: '*'
+      TRUSTED_PROXY_IPS: '127.0.0.1'
     depends_on:
       db:
         condition: service_healthy
