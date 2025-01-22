@@ -15,6 +15,8 @@ The layers, from top to bottom, are:
 
 These layers are all found under the `/app` directory.
 
+Initialization scripts for the database are found under the `/scripts/db` directory.
+
 ## Running the app
 
 The app is containerized using Docker.
