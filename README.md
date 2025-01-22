@@ -6,14 +6,13 @@ The project is structured following a layered architecture, aiming to provide a 
 
 The layers, from top to bottom, are:
 
-- **Router**: Contains the routes and the server configuration.
 - **Middleware**: Contains the middleware functions that are applied to the routes, executing before the handlers.
 - **Handler**: Handles HTTP requests and responses. Interactions are preferably made with DTOs.
 - **Service**: Contains the business logic.
 - **Model**: Contains the domain entities.
 - **Repository**: Handles the data access.
 
-These layers are all found under the `/app` directory.
+These layers are all found under the `/app` directory. Routing is defined in the `/router/router.go` file.
 
 Initialization scripts for the database are found under the `/scripts/db` directory.
 
