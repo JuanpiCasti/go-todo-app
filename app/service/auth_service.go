@@ -2,6 +2,7 @@ package service
 
 import (
 	"errors"
+	"github.com/juanpicasti/go-todo-app/config"
 	"golang.org/x/crypto/bcrypt"
 	"time"
 
@@ -9,7 +10,6 @@ import (
 	"github.com/juanpicasti/go-todo-app/app/dtos"
 	"github.com/juanpicasti/go-todo-app/app/model"
 	"github.com/juanpicasti/go-todo-app/app/repository"
-	"github.com/juanpicasti/go-todo-app/config"
 )
 
 type AuthService interface {

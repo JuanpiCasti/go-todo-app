@@ -2,9 +2,9 @@ package database
 
 import (
 	"fmt"
+	"github.com/juanpicasti/go-todo-app/config"
 
 	"github.com/jmoiron/sqlx"
-	"github.com/juanpicasti/go-todo-app/config"
 	_ "github.com/lib/pq"
 )
 

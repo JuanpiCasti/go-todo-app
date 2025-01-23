@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"errors"
+	"github.com/juanpicasti/go-todo-app/config"
 	"net/http"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/juanpicasti/go-todo-app/app/dtos"
-	"github.com/juanpicasti/go-todo-app/config"
 )
 
 func AuthMiddleware() gin.HandlerFunc {

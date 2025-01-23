@@ -1,11 +1,10 @@
 package main
 
 import (
-	"github.com/rs/zerolog/log"
-
 	"github.com/juanpicasti/go-todo-app/config"
 	"github.com/juanpicasti/go-todo-app/database"
 	"github.com/juanpicasti/go-todo-app/router"
+	"github.com/rs/zerolog/log"
 
 	"github.com/jmoiron/sqlx"
 )
