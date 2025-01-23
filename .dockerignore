@@ -1,1 +1,15 @@
 *_test.go
+
+.env
+
+.git/
+.gitignore
+
+bin/
+tmp/
+
+docs/
+scripts/
+
+.idea/
+.vscode/
