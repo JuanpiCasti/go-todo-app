@@ -16,6 +16,8 @@ These layers are all found under the `/app` directory. Routing is defined in the
 
 Initialization scripts for the database are found under the `/scripts/db` directory.
 
+An example openapi specification is provided under the `/docs` directory, describing the example endpoints.
+
 ## Running the app
 
 The app is containerized using Docker.
