@@ -10,6 +10,55 @@ tags:
 
 components:
   schemas:
+    RegisterRequest:
+      type: object
+      required:
+        - username
+        - password
+        - password_repeat
+        - phone_number
+        - email
+        - name
+        - last_name
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+        password_repeat:
+          type: string
+          format: password
+        phone_number:
+          type: string
+        email:
+          type: string
+          format: email
+        name:
+          type: string
+        last_name:
+          type: string
+
+    LoginRequest:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    LoginResponse:
+      type: object
+      required:
+        - token
+      properties:
+        token:
+          type: string
+
     Todo:
       type: object
       required:
@@ -82,6 +131,44 @@ components:
             $ref: '#/components/schemas/Error'
 
 paths:
+  /register:
+    post:
+      summary: Register a new user
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegisterRequest'
+      responses:
+        '201':
+          description: User successfully registered
+        '400':
+          description: Invalid input
+        '409':
+          description: Username or email already exists
+
+  /login:
+    post:
+      summary: Authenticate user and receive JWT token
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/LoginRequest'
+      responses:
+        '200':
+          description: Successfully authenticated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/LoginResponse'
+        '401':
+          description: Authentication failed
+
   /api/v1/todos:
     get:
       tags:
