@@ -1,6 +1,7 @@
 *_test.go
 
 .env
+.air.toml
 
 .git/
 .gitignore
