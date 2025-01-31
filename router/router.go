@@ -40,18 +40,7 @@ func SetupRouter(db *sqlx.DB) *gin.Engine {
 
 func (r *Router) setupRoutes() {
 	r.setupAuthRoutes()
-
-	// API routes
-	api := r.engine.Group("/api/v1")
-	api.Use(middleware.AuthMiddleware())
-	api.Use(middleware.RoleMiddleware(map[string]bool{
-		"admin": true,
-		"user":  true,
-	}))
-
-	{
-		r.setupTodoRoutes(api)
-	}
+	r.setupApiRoutes()
 }
 
 func (r *Router) initializeHandlers() {

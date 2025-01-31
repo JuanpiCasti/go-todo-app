@@ -1,8 +1,8 @@
 package router
 
 import (
-	"github.com/gin-gonic/gin"
 	"github.com/juanpicasti/go-todo-app/app/handler"
+	"github.com/juanpicasti/go-todo-app/app/middleware"
 	"github.com/juanpicasti/go-todo-app/app/repository"
 	"github.com/juanpicasti/go-todo-app/app/service"
 )
@@ -13,7 +13,15 @@ func (r *Router) initTodoHandler() {
 	r.todoHandler = handler.NewTodoHandler(todoService)
 }
 
-func (r *Router) setupTodoRoutes(api *gin.RouterGroup) {
+func (r *Router) setupApiRoutes() {
+	api := r.engine.Group("/api/v1")
+
+	api.Use(middleware.AuthMiddleware())
+	api.Use(middleware.RoleMiddleware(map[string]bool{
+		"admin": true,
+		"user":  true,
+	}))
+
 	api.GET("/todos", r.todoHandler.GetAll)
 	api.GET("/todos/:id", r.todoHandler.GetById)
 	api.POST("/todos", r.todoHandler.Create)
