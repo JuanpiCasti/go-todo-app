@@ -10,7 +10,9 @@ FROM alpine:3.21.2
 
 WORKDIR /app
 
-EXPOSE 8080
+ARG SERVER_PORT
+ENV SERVER_PORT=${SERVER_PORT}
+EXPOSE ${SERVER_PORT}
 
 COPY --from=builder /app/bin/serve /app/serve
 

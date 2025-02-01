@@ -4,32 +4,18 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ginplayground-server
+    env_file:
+      - .env
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
-    environment:
-      DATABASE_USER: ${DATABASE_USER}
-      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
-      DATABASE_HOST: ${DATABASE_HOST}
-      DATABASE_PORT: ${DATABASE_PORT}
-      DATABASE_SSL_MODE: ${DATABASE_SSL_MODE}
-      DATABASE_NAME: ${DATABASE_NAME}
-      SSLROOTCERT: ${SSLROOTCERT}
-      SERVER_PORT: ${SERVER_PORT}
-      GO_MODE: ${GO_MODE}
-      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
-      JWT_SECRET: ${JWT_SECRET}
-      TOKEN_DURATION_MINUTES: ${TOKEN_DURATION_MINUTES}
-      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS}
     depends_on:
       db:
         condition: service_healthy
   db:
     image: postgres:17.2-alpine3.21
     container_name: postgres-todo-app
-    environment:
-      POSTGRES_USER: ${DATABASE_USER}
-      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
-      POSTGRES_DB: ${DATABASE_NAME}
+    env_file:
+      - .env
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./scripts/db:/docker-entrypoint-initdb.d
