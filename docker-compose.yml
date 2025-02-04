@@ -14,8 +14,10 @@ services:
   db:
     image: postgres:17.2-alpine3.21
     container_name: postgres-todo-app
-    env_file:
-      - .env
+    environment:
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+      POSTGRES_DB: ${DATABASE_NAME}
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./scripts/db:/docker-entrypoint-initdb.d
