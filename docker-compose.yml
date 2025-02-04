@@ -4,8 +4,20 @@ services:
       context: .
       dockerfile: Dockerfile
     container_name: ginplayground-server
-    env_file:
-      - .env
+    environment:
+      DATABASE_USER: ${DATABASE_USER}
+      DATABASE_PASSWORD: ${DATABASE_PASSWORD}
+      DATABASE_HOST: ${DATABASE_HOST}
+      DATABASE_PORT: ${DATABASE_PORT}
+      DATABASE_SSL_MODE: ${DATABASE_SSL_MODE}
+      DATABASE_NAME: ${DATABASE_NAME}
+      SSLROOTCERT: ${SSLROOTCERT}
+      SERVER_PORT: ${SERVER_PORT}
+      GO_MODE: ${GO_MODE}
+      ALLOWED_ORIGINS: ${ALLOWED_ORIGINS}
+      JWT_SECRET: ${JWT_SECRET}
+      TOKEN_DURATION_MINUTES: ${TOKEN_DURATION_MINUTES}
+      TRUSTED_PROXY_IPS: ${TRUSTED_PROXY_IPS}
     ports:
       - "${SERVER_PORT}:${SERVER_PORT}"
     depends_on:
