@@ -1,7 +1,6 @@
 *_test.go
 
 README.md
-.env
 .air.toml
 Dockerfile
 .dockerignore
