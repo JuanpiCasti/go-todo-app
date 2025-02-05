@@ -1,21 +1,19 @@
 package handler
 
 import (
-	"github.com/juanpicasti/go-todo-app/app/util"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
 	"github.com/juanpicasti/go-todo-app/app/dtos"
 	"github.com/juanpicasti/go-todo-app/app/service"
+	"github.com/juanpicasti/go-todo-app/app/util"
+	"net/http"
 )
 
 type AuthHandler struct {
-	authService       service.AuthService
-	passwordValidator util.Validator
+	authService service.AuthService
 }
 
-func NewAuthHandler(authService service.AuthService, validator util.Validator) *AuthHandler {
-	return &AuthHandler{authService, validator}
+func NewAuthHandler(authService service.AuthService) *AuthHandler {
+	return &AuthHandler{authService}
 }
 
 func (h *AuthHandler) Login(c *gin.Context) {
@@ -36,13 +34,8 @@ func (h *AuthHandler) Login(c *gin.Context) {
 
 func (h *AuthHandler) Register(c *gin.Context) {
 	var registerRequest dtos.RegisterRequest
-	if err := c.ShouldBindJSON(&registerRequest); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
-		return
-	}
-
-	if err := h.passwordValidator.Validate(registerRequest.Password); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	if errs := util.BindJsonWithErrs(c, &registerRequest); errs != nil {
+		c.JSON(http.StatusBadRequest, errs)
 		return
 	}
 
